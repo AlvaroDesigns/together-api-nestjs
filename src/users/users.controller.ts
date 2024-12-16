@@ -27,18 +27,11 @@ export class UsersController {
     return this.usersService.getOnlyUsers();
   }
 
-  @ApiOperation({ summary: "Get users more data" })
-  @UseGuards(JwtAuthGuard)
-  @Get("users")
-  findAll() {
-    return this.usersService.getUsers();
-  }
-
   @ApiOperation({ summary: "Get user" })
   @UseGuards(JwtAuthGuard)
-  @Get("user/:id")
-  findOne(@Param("id") id: string) {
-    return this.usersService.findOne(+id);
+  @Get("user/:email")
+  findOne(@Param("email") email: string) {
+    return this.usersService.findOne(email);
   }
 
   @ApiOperation({ summary: "Create user" })

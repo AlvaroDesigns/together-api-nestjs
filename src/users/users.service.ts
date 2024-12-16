@@ -11,18 +11,6 @@ export class UsersService {
     return this.prisma.user.findMany();
   }
 
-  async getUsers() {
-    return this.prisma.user.findMany({
-      include: {
-        itinerary: {
-          include: {
-            items: true,
-          },
-        },
-      },
-    });
-  }
-
   async getUserById(email: User["email"]) {
     return this.prisma.user.findUnique({
       where: { email },
@@ -30,11 +18,12 @@ export class UsersService {
     });
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOne(email: string): Promise<User> {
     return this.prisma.user.findUnique({
       where: {
-        id,
+        email,
       },
+      include: { itinerary: true },
     });
   }
 

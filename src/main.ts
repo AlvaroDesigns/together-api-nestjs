@@ -20,7 +20,6 @@ async function bootstrap() {
     .setDescription(
       "BFF for to provide to NN Together App the information from APIM services."
     )
-    .addTag("Api")
     .setVersion("1.0")
     .addBearerAuth()
     .build();
