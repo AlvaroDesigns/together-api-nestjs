@@ -1,4 +1,11 @@
-import { Injectable, NotFoundException, Post } from "@nestjs/common";
+import {
+  Delete,
+  Get,
+  Injectable,
+  NotFoundException,
+  Patch,
+  Post,
+} from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 import { Itinerary, Prisma } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -9,20 +16,23 @@ import { CreateItineraryDto } from "./dto/create-itinerary.dto";
 export class ItinerariesService {
   constructor(private prisma: PrismaService) {}
 
+  @Get()
+  @ApiOperation({ summary: "Update only Itinerary " })
   async getAll(): Promise<Itinerary[]> {
-    return this.prisma.itinerary.findMany({
-      include: {
-        items: true,
-      },
-    });
+    return this.prisma.itinerary.findMany();
   }
 
+  @Get()
+  @ApiOperation({ summary: "Update a Itinerary and details" })
   async getId(where: Prisma.ItineraryWhereUniqueInput): Promise<Itinerary> {
     return this.prisma.itinerary.findUnique({
       where: { id: where.id },
+      include: { items: true },
     });
   }
 
+  @Patch()
+  @ApiOperation({ summary: "Update a Itinerary" })
   async update(params: {
     where: Prisma.ItineraryWhereUniqueInput;
     data: Prisma.ItineraryUpdateInput;
@@ -35,6 +45,8 @@ export class ItinerariesService {
     });
   }
 
+  @Delete()
+  @ApiOperation({ summary: "Delete a Itinerary" })
   async delete(where: Prisma.ItineraryWhereUniqueInput): Promise<Itinerary> {
     return this.prisma.itinerary.delete({
       where,
@@ -72,14 +84,35 @@ export class ItinerariesService {
       where: { id: Number(itineraryId) },
     });
 
-    console.log("vega", itinerary, itineraryId);
-
     if (!itinerary) {
       throw new NotFoundException(`Itinerary with ID ${itineraryId} not found`);
     }
 
     // Crear el itinerario asociado al usuario
     return this.prisma.details.create({
+      data: {
+        ...data,
+        type: data.type as DetailsType,
+        itinerary: { connect: { id: Number(itineraryId) } },
+      },
+    });
+  }
+
+  @Patch()
+  @ApiOperation({ summary: "Edit a Details" })
+  async updateDetails(itineraryId: number, data: CreateDetailsDto) {
+    // Verificar si el itinerario existe
+    const itinerary = await this.prisma.itinerary.findUnique({
+      where: { id: Number(itineraryId) },
+    });
+
+    if (!itinerary) {
+      throw new NotFoundException(`Itinerary with ID ${itineraryId} not found`);
+    }
+
+    // Crear el itinerario asociado al usuario
+    return this.prisma.details.update({
+      where: { id: Number(itineraryId) },
       data: {
         ...data,
         type: data.type as DetailsType,

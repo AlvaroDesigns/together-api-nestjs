@@ -32,13 +32,13 @@
     "@nestjs/websockets": "^10.4.8",
     "@prisma/adapter-neon": "^5.22.0",
     "@prisma/client": "^5.22.0",
-    "@vercel/node": "^3.2.24",
+    "@vercel/node": "^4.0.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
-    "vercel": "^32.3.0",
+    "vercel": "^28.18.5",
     "ws": "^8.18.0"
   },
   "devDependencies": {

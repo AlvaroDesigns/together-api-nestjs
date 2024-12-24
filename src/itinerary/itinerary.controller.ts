@@ -6,7 +6,6 @@ import {
   Param,
   Patch,
   Post,
-  Put,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -37,32 +36,16 @@ export class ItinerariesController {
     return this.itineraryService.getAll();
   }
 
-  @ApiOperation({ summary: "get id itinerary, 60" })
+  @ApiOperation({ summary: "get id itinerary details" })
   @UseGuards(JwtAuthGuard)
   @ApiParam({
     name: "id",
     type: String,
     description: "ID of the itinerary",
   })
-  @Get(":id")
+  @Get("details/:id")
   async getId(@Param("id") id: number): Promise<Itinerary> {
     return this.itineraryService.getId({ id: Number(id) });
-  }
-
-  @ApiOperation({ summary: "Edit itinerary" })
-  @ApiBody({ type: CreateItineraryDto })
-  @ApiParam({
-    name: "id",
-    type: String,
-    description: "ID of the itinerary",
-  })
-  @UseGuards(JwtAuthGuard)
-  @Put(":id")
-  async publishItinerary(@Param("id") id: string): Promise<Itinerary> {
-    return this.itineraryService.update({
-      where: { id: Number(id) },
-      data: { published: true } as Prisma.ItineraryUpdateInput,
-    });
   }
 
   @ApiOperation({ summary: "Edit itinerary" })
@@ -127,6 +110,23 @@ export class ItinerariesController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async createDetails(
+    @Param("itineraryId") itineraryId: number,
+    @Body() createDetailsDto: CreateDetailsDto
+  ) {
+    return this.itineraryService.createDetails(itineraryId, createDetailsDto);
+  }
+
+  @Post(":itineraryId/details")
+  @ApiOperation({ summary: "Create details" })
+  @ApiBody({ type: CreateDetailsDto })
+  @ApiParam({
+    name: "itineraryId",
+    type: String,
+    description: "ID of the itinerary",
+  })
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async updateDetails(
     @Param("itineraryId") itineraryId: number,
     @Body() createDetailsDto: CreateDetailsDto
   ) {

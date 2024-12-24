@@ -1,5 +1,6 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { User } from "@prisma/client";
+import { isEmail, isNumber } from "class-validator";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 
@@ -12,6 +13,10 @@ export class UsersService {
   }
 
   async getUserById(email: User["email"]) {
+    if (!isEmail(email)) {
+      throw new BadRequestException(`Invalid email format: ${email}`);
+    }
+
     return this.prisma.user.findUnique({
       where: { email },
       include: { itinerary: true },
@@ -19,6 +24,11 @@ export class UsersService {
   }
 
   async findOne(email: string): Promise<User> {
+    // Verificar si el email es válido
+    if (!isEmail(email)) {
+      throw new BadRequestException(`Invalid email format: ${email}`);
+    }
+
     return this.prisma.user.findUnique({
       where: {
         email,
@@ -34,6 +44,10 @@ export class UsersService {
   }
 
   async updateUser(id: number, data: any): Promise<User> {
+    if (!isNumber(id)) {
+      throw new BadRequestException(`Invalid email format: ${id}`);
+    }
+
     return this.prisma.user.update({
       where: {
         id,
