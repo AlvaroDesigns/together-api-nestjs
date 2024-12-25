@@ -101,13 +101,13 @@ export class ItinerariesService {
   @Patch()
   @ApiOperation({ summary: "Edit a Details" })
   async updateDetails(itineraryId: number, data: CreateDetailsDto) {
-    // Verificar si el itinerario existe
-    const itinerary = await this.prisma.itinerary.findUnique({
+    // Verificar si los detalles existen
+    const details = await this.prisma.details.findUnique({
       where: { id: Number(itineraryId) },
     });
 
-    if (!itinerary) {
-      throw new NotFoundException(`Itinerary with ID ${itineraryId} not found`);
+    if (!details) {
+      throw new NotFoundException(`Details with ID ${itineraryId} not found`);
     }
 
     // Crear el itinerario asociado al usuario
@@ -116,7 +116,6 @@ export class ItinerariesService {
       data: {
         ...data,
         type: data.type as DetailsType,
-        itinerary: { connect: { id: Number(itineraryId) } },
       },
     });
   }

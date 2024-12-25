@@ -20,9 +20,9 @@ import { UsersService } from "./users.service";
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @ApiOperation({ summary: "Get only users" })
+  @ApiOperation({ summary: "Deprecated" })
   @UseGuards(JwtAuthGuard)
-  @Get("onlyUsers")
+  @Get("user/all")
   findOnlyAll() {
     return this.usersService.getOnlyUsers();
   }

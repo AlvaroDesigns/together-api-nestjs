@@ -99,7 +99,7 @@ export class ItinerariesController {
     return this.itineraryService.create(numericUserId, itinerary);
   }
 
-  @Post(":itineraryId/details")
+  @Post("details/:itineraryId")
   @ApiOperation({ summary: "Create details" })
   @ApiBody({ type: CreateDetailsDto })
   @ApiParam({
@@ -116,8 +116,8 @@ export class ItinerariesController {
     return this.itineraryService.createDetails(itineraryId, createDetailsDto);
   }
 
-  @Post(":itineraryId/details")
-  @ApiOperation({ summary: "Create details" })
+  @Patch("/details/:itineraryId")
+  @ApiOperation({ summary: "Update details" })
   @ApiBody({ type: CreateDetailsDto })
   @ApiParam({
     name: "itineraryId",
@@ -130,6 +130,6 @@ export class ItinerariesController {
     @Param("itineraryId") itineraryId: number,
     @Body() createDetailsDto: CreateDetailsDto
   ) {
-    return this.itineraryService.createDetails(itineraryId, createDetailsDto);
+    return this.itineraryService.updateDetails(itineraryId, createDetailsDto);
   }
 }
