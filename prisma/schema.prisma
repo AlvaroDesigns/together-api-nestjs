@@ -57,7 +57,7 @@ model Details {
   stars        Int?
   placeUrl     String?
   numberFlight String?
-  description  String?
+  description  String[]
   imageUrl     String?
   cityName     String?
   region       String?

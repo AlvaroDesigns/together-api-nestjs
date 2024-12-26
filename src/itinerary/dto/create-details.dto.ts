@@ -19,15 +19,17 @@ export class CreateDetailsDto {
 
   @IsInt()
   @IsNotEmpty()
-  days: number;
+  @IsOptional()
+  days?: number;
 
   @IsDateString()
   @IsNotEmpty()
   startDate: string;
 
+  @IsOptional()
   @IsDateString()
   @IsNotEmpty()
-  endDate: string;
+  endDate?: string;
 
   @IsOptional()
   @IsString()
