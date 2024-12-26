@@ -13,10 +13,6 @@ export class CreateDetailsDto {
   @IsNotEmpty()
   type: string;
 
-  @IsString()
-  @IsNotEmpty()
-  title: string;
-
   @IsInt()
   @IsNotEmpty()
   @IsOptional()
