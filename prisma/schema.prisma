@@ -46,20 +46,18 @@ enum DetailsType {
   TRIP
 }
 
-
 model Details {
-  id           Int      @id @default(autoincrement())
-  type         DetailsType @default(FLIGHT)
-  title        String
-  days         Int      @default(0)
-  startDate    DateTime @updatedAt
-  endDate      DateTime @updatedAt
+  id           Int       @default(autoincrement())
+ type         DetailsType @default(FLIGHT)
+  days         Int       @default(0)
+  startDate    DateTime  @updatedAt
+  endDate      DateTime? @updatedAt
   departure    String?
   destination  String?
   stars        Int?
   placeUrl     String?
   numberFlight String?
-  description  String[]
+  description  String?
   imageUrl     String?
   cityName     String?
   region       String?
@@ -68,5 +66,6 @@ model Details {
   collapse     Boolean  @default(false)
   itineraryId  Int
   itinerary    Itinerary @relation(fields: [itineraryId], references: [id])
+  @@id([id, itineraryId]) // Definir clave primaria compuesta
 }
 
