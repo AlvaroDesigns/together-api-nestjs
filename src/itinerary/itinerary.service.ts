@@ -92,6 +92,7 @@ export class ItinerariesService {
     return this.prisma.details.create({
       data: {
         ...data,
+        description: data.description.join(", "), // Convert string array to a single string
         type: data.type as DetailsType,
         itinerary: { connect: { id: Number(itineraryId) } },
       },
@@ -115,6 +116,7 @@ export class ItinerariesService {
       where: { id: Number(itineraryId) },
       data: {
         ...data,
+        description: data.description.join(", "), // Convert string array to a single string
         type: data.type as DetailsType,
       },
     });
