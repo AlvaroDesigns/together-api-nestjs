@@ -47,8 +47,8 @@ enum DetailsType {
 }
 
 model Details {
-  id           Int       @default(autoincrement())
- type         DetailsType @default(FLIGHT)
+  id           Int      @id @default(autoincrement())
+  type         DetailsType @default(FLIGHT)
   days         Int       @default(0)
   startDate    DateTime  @updatedAt
   endDate      DateTime? @updatedAt
@@ -66,6 +66,6 @@ model Details {
   collapse     Boolean  @default(false)
   itineraryId  Int
   itinerary    Itinerary @relation(fields: [itineraryId], references: [id])
-  @@id([id, itineraryId]) // Definir clave primaria compuesta
+
 }
 
