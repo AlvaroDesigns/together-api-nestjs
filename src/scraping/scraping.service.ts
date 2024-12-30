@@ -12,6 +12,10 @@ export class ScrapingService {
 
   // Iniciar Playwright al inicializar el módulo
   async init() {
+    if (!chromium) {
+      return;
+    }
+
     this.browser = await chromium.launch({ headless: true });
   }
 
