@@ -42,7 +42,7 @@
     "passport-jwt": "^4.0.1",
     "playwright": "^1.49.1",
     "reflect-metadata": "^0.1.13",
-    "vercel": "^39.2.2",
+    "vercel": "^32.3.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {
