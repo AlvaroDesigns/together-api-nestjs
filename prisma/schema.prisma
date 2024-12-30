@@ -47,25 +47,28 @@ enum DetailsType {
 }
 
 model Details {
-  id           Int      @id @default(autoincrement())
-  type         DetailsType @default(FLIGHT)
-  days         Int       @default(0)
-  startDate    DateTime  @updatedAt
-  endDate      DateTime? @updatedAt
-  departure    String?
-  destination  String?
-  stars        Int?
-  placeUrl     String?
-  numberFlight String?
-  description  String[]
-  imageUrl     String?
-  cityName     String?
-  region       String?
-  country      String?
-  name         String?
-  collapse     Boolean  @default(false)
-  itineraryId  Int
-  itinerary    Itinerary @relation(fields: [itineraryId], references: [id])
+  id               Int      @id @default(autoincrement())
+  type             DetailsType @default(FLIGHT)
+  days             Int       @default(0)
+  startDate        DateTime  @updatedAt
+  endDate          DateTime? @updatedAt
+  departure        String?
+  departureLabel   String?
+  destination      String?
+  destinationLabel String?
+  arrivalTime      String?
+  stars            Int?
+  placeUrl         String?
+  numberFlight     String?
+  description      String[]
+  imageUrl         String?
+  cityName         String?
+  region           String?
+  country          String?
+  name             String?
+  collapse         Boolean  @default(false)
+  itineraryId      Int
+  itinerary        Itinerary @relation(fields: [itineraryId], references: [id])
 
 }
 

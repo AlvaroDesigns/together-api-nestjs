@@ -33,7 +33,19 @@ export class CreateDetailsDto {
 
   @IsOptional()
   @IsString()
+  departureLabel?: string;
+
+  @IsOptional()
+  @IsString()
   destination?: string;
+
+  @IsOptional()
+  @IsString()
+  destinationLabel?: string;
+
+  @IsOptional()
+  @IsString()
+  arrivalTime?: string;
 
   @IsOptional()
   @IsInt()
