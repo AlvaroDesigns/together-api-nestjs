@@ -35,6 +35,7 @@
     "@prisma/adapter-neon": "^5.22.0",
     "@prisma/client": "^5.22.0",
     "@vercel/node": "^4.0.0",
+    "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "cache-manager": "^5.7.6",
     "class-transformer": "^0.5.1",

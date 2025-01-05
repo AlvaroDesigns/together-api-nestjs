@@ -30,36 +30,38 @@ export class ScrapingService {
 
     const page: Page = await this.browser.newPage();
 
-    const prefix = flightNumber.slice(0, 2);
-
-    // Extraer el resto
-    const rest = flightNumber.slice(2);
-
     // URL de ejemplo (cámbiala por el sitio que contiene la información del vuelo)
-    const url = `https://www.flightstats.com/v2/flight-details/FR/8301/${prefix}/${rest}`;
+    const url = `https://www.airnavradar.com/data/flights/${flightNumber}`;
     await page.goto(url, { waitUntil: "load" });
 
     try {
       // Extraer información del vuelo usando selectores CSS
       const flightInfo = await page.evaluate(() => {
-        const citys = Array.from(
-          document.querySelectorAll(".airportCodeTitle")
-        ).map((item) => item.innerHTML.trim());
-
         const citysLarge = Array.from(
-          document.querySelectorAll(".airportNameSubtitle")
+          document.querySelectorAll("#label #code")
+        ).map(
+          (item) =>
+            item.innerHTML
+              .trim()
+              .replace(/[\(\)<!-- -->]/g, "")
+              .trim()
+              .split("/")[0]
+        );
+        console.log(citysLarge);
+        const citys = Array.from(
+          document.querySelectorAll("#airports #city")
         ).map((item) => item.innerHTML.trim());
 
         const arrivalTime = Array.from(
-          document.querySelectorAll(".flightTimeBlock .detail")
-        ).map((item) => item.innerHTML.trim());
-        console.log(citys, citysLarge, arrivalTime);
+          document.querySelectorAll("#content #value")
+        ).map((item) => item.textContent.trim());
+
         return {
-          departure: citys[0] || "No disponible",
-          arrivadas: citys[1] || "No disponible",
-          departureLabel: citysLarge[0] || "No disponible",
-          arrivadasLabel: citysLarge[1] || "No disponible",
-          arrivalTime: arrivalTime[0] || "No disponible",
+          departure: citys[0] || document.querySelector("body").innerText,
+          arrivadas: citys[1] || null,
+          departureLabel: citysLarge[2] || null,
+          arrivadasLabel: citysLarge[3] || null,
+          arrivalTime: arrivalTime[1] || null,
         };
       });
 

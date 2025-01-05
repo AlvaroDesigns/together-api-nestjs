@@ -1,13 +1,17 @@
 import {
   Controller,
   Get,
+  HttpException,
+  HttpStatus,
   OnModuleDestroy,
   OnModuleInit,
   Query,
 } from "@nestjs/common";
+import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ScrapingService } from "./scraping.service";
 
-@Controller("flights")
+@ApiTags("Operative")
+@Controller("v1/operative")
 export class ScrapingController implements OnModuleInit, OnModuleDestroy {
   constructor(private readonly scrapingService: ScrapingService) {}
 
@@ -22,10 +26,14 @@ export class ScrapingController implements OnModuleInit, OnModuleDestroy {
   }
 
   // Endpoint para obtener detalles de un vuelo
-  @Get()
-  async getFlightDetails(@Query("flightNumber") flightNumber: string) {
+  @ApiOperation({ summary: "Get Flight search" })
+  @Get("/flight")
+  async getFlight(@Query("flightNumber") flightNumber: string) {
     if (!flightNumber) {
-      return { error: "Por favor, proporciona un número de vuelo" };
+      return new HttpException(
+        "Por favor, proporciona un número de vuelo",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
 
     try {
