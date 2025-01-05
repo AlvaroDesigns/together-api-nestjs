@@ -44,9 +44,11 @@ export class OperativeService {
 
     const API_KEY = process.env.APIKEY_WEATHER;
 
+    const name = query.split(" ").join("_");
+
     const options = {
       method: "GET",
-      url: `https://api.tomorrow.io/v4/timelines?location=${query}&fields=temperatureMax,temperatureMin,humidityAvg&units=metric&timesteps=1d&apikey=${API_KEY}`,
+      url: `https://api.tomorrow.io/v4/timelines?location=${name}&fields=temperatureMax,temperatureMin,humidityAvg&units=metric&timesteps=1d&apikey=${API_KEY}`,
     };
 
     try {

@@ -1,9 +1,10 @@
 import { Controller, Get, Query, UseGuards } from "@nestjs/common";
-import { ApiOperation, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { OperativeService } from "./operative.service";
 
 @ApiTags("Operative")
+@ApiBearerAuth()
 @Controller("v1/operative")
 export class OperativeController {
   constructor(private operativeService: OperativeService) {}
