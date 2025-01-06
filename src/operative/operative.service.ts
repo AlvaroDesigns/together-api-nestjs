@@ -16,20 +16,25 @@ export class OperativeService {
 
     const options = {
       method: "GET",
-      url: `https://autocomplete.toolfactory.tech/query?q=${query}&l=es&f=json&g=false&n=10&t=ISL,ZON,CIU,HOT&o=HOT`,
+      url: `https://wanderlog.com/api/geo/autocomplete/{${query}}`,
     };
 
     try {
       const response = await axios.request(options);
 
-      const destination = response.data?.d.map((destination) => ({
-        label: destination.text,
-        key: destination.text,
-        value: destination.value,
+      const destination = response.data?.map((destination) => ({
+        key: destination?.name,
+        name: destination?.name,
+        stateName: destination?.stateName,
+        countryName: destination?.countryName,
+        subcategory: destination?.subcategory,
+        latitude: destination?.latitude,
+        longitude: destination?.longitude,
       }));
 
       return destination;
     } catch (error) {
+      console.log(error);
       throw new HttpException(
         error.response?.data || "Error fetching data from Booking API",
         error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
