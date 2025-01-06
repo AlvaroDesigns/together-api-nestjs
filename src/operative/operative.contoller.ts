@@ -22,4 +22,14 @@ export class OperativeController {
   searchWeather(@Query("query") query: string) {
     return this.operativeService.searchWeather(query);
   }
+
+  @ApiOperation({ summary: "Get flight details" })
+  @UseGuards(JwtAuthGuard)
+  @Get("fight")
+  searchFights(
+    @Query("flightNumber") flightNumber: string,
+    @Query("date") date: string
+  ) {
+    return this.operativeService.searchFight(flightNumber, date);
+  }
 }

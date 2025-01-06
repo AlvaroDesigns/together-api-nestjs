@@ -67,4 +67,53 @@ export class OperativeService {
       );
     }
   }
+
+  async searchFight(flightNumber: string, date: string): Promise<any> {
+    if (!isString(flightNumber)) {
+      throw new BadRequestException(
+        `Invalid query weather format: ${flightNumber}`
+      );
+    }
+
+    const prefix = flightNumber.slice(0, 2);
+
+    // Extraer el resto
+    const rest = flightNumber.slice(2);
+
+    const options = {
+      method: "GET",
+      url: `https://wanderlog.com/api/flights/flightStops?airlineIata=${prefix}&flightNumber=${rest}&departDate=${date}`,
+    };
+
+    try {
+      const response = await axios.request(options);
+
+      const details = response.data.data[0];
+
+      const mappedDetails = {
+        arrive: {
+          cityName: details?.arrive?.airport.cityName,
+          name: details?.arrive?.airport.name,
+          iata: details?.arrive?.airport.iata,
+          date: details?.arrive?.date,
+          time: details?.arrive?.time,
+        },
+        depart: {
+          cityName: details?.depart?.airport.cityName,
+          name: details?.depart?.airport.name,
+          iata: details?.depart?.airport.iata,
+          date: details?.depart?.date,
+          time: details?.depart?.time,
+        },
+      };
+
+      return mappedDetails;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        error.response?.data || "Error fetching data from Weather API",
+        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 }
