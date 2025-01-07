@@ -22,7 +22,7 @@ export class OperativeService {
     try {
       const response = await axios.request(options);
 
-      const destination = response.data?.map((destination) => ({
+      const destination = response?.data?.data?.map((destination) => ({
         key: destination?.name,
         name: destination?.name,
         stateName: destination?.stateName,
@@ -32,7 +32,10 @@ export class OperativeService {
         longitude: destination?.longitude,
       }));
 
-      return destination;
+      return {
+        data: destination,
+        status: response?.data.status,
+      };
     } catch (error) {
       console.log(error);
       throw new HttpException(

@@ -11,7 +11,7 @@ export class OperativeController {
 
   @ApiOperation({ summary: "Get Hotel search" })
   @UseGuards(JwtAuthGuard)
-  @Get("hotels")
+  @Get("directions")
   search(@Query("query") query: string) {
     return this.operativeService.searchDestination(query);
   }
