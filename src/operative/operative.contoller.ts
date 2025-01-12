@@ -1,6 +1,16 @@
-import { Controller, Get, Query, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from "@nestjs/common";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { SendEmailDto } from "./dto/email.dto";
 import { OperativeService } from "./operative.service";
 
 @ApiTags("Operative")
@@ -31,5 +41,14 @@ export class OperativeController {
     @Query("date") date: string
   ) {
     return this.operativeService.searchFight(flightNumber, date);
+  }
+
+  @ApiOperation({ summary: "Send an email" })
+  @Post("email")
+  @ApiBody({ type: SendEmailDto })
+  //@UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async sendEmail(@Body() sendEmail: SendEmailDto) {
+    return this.operativeService.sendEmail(sendEmail);
   }
 }

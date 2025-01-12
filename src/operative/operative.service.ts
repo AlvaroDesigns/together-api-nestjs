@@ -5,7 +5,8 @@ import {
   Injectable,
 } from "@nestjs/common";
 import axios from "axios";
-import { isString } from "class-validator";
+import { isObject, isString } from "class-validator";
+import { SendEmailDto } from "./dto/email.dto";
 
 @Injectable()
 export class OperativeService {
@@ -115,6 +116,38 @@ export class OperativeService {
       console.log(error);
       throw new HttpException(
         error.response?.data || "Error fetching data from Weather API",
+        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async sendEmail(body: SendEmailDto): Promise<any> {
+    if (!isObject(body)) {
+      throw new BadRequestException(`Invalid body response: ${body}`);
+    }
+
+    const options = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      },
+      body: JSON.stringify({
+        from: body?.from,
+        to: body?.to,
+        subject: body?.subject,
+        html: "<p>Gracias por registrarte en Together</p>",
+      }),
+      url: "https://api.resend.com/emails",
+    };
+
+    try {
+      const response = await axios.request(options);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        error.response?.data || "Error fetching data from Email API",
         error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
