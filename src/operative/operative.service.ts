@@ -133,8 +133,8 @@ export class OperativeService {
         Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: body?.from,
-        to: body?.to,
+        from: `Togeher <${body?.from}>`,
+        to: [body?.to],
         subject: body?.subject,
         html: "<p>Gracias por registrarte en Together</p>",
       }),
