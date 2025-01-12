@@ -3,4 +3,6 @@ enum DetailsType {
   TRANSFER = "TRANSFER",
   HOTEL = "HOTEL",
   TRIP = "TRIP",
+  BOAT = "BOAT",
+  OTHER = "OTHER",
 }

@@ -6,7 +6,6 @@ export class RegisterDto {
     description: "Name address of the recipient",
     example: "Jesus",
   })
-  @IsEmail()
   @IsString()
   @IsNotEmpty()
   name: string;
