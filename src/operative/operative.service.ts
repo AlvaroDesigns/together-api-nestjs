@@ -145,7 +145,6 @@ export class OperativeService {
       const response = await axios.request(options);
       return response.data;
     } catch (error) {
-      console.log(error);
       throw new HttpException(
         error.response?.data || "Error fetching data from Email API",
         error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
