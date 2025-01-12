@@ -17,11 +17,9 @@ export class AuthService {
     const { email, password, name, phone } = body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await this.prisma.user.create({
+    return await this.prisma.user.create({
       data: { email, password: hashedPassword, name, phone },
     });
-
-    return this.createToken(user);
   }
 
   // Inicio de sesión
