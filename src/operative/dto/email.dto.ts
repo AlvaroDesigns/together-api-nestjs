@@ -22,4 +22,11 @@ export class SendEmailDto {
   })
   @IsString()
   subject: string;
+
+  @ApiProperty({
+    description: "Html of the email",
+    example: "<h1>Hello World</h1>",
+  })
+  @IsString()
+  html: string;
 }

@@ -126,23 +126,22 @@ export class OperativeService {
       throw new BadRequestException(`Invalid body response: ${body}`);
     }
 
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: `Togeher <${body?.from}>`,
-        to: [body?.to],
-        subject: body?.subject,
-        html: "<p>Gracias por registrarte en Together</p>",
-      }),
-      url: "https://api.resend.com/emails",
+    const data = {
+      from: body?.from,
+      to: body?.to,
+      subject: body?.subject,
+      html: body?.html,
     };
 
+    const response = await axios.post("https://api.resend.com/emails", data, {
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+    });
+
     try {
-      const response = await axios.request(options);
+      axios.request(response);
       return response.data;
     } catch (error) {
       throw new HttpException(
