@@ -150,4 +150,29 @@ export class OperativeService {
       );
     }
   }
+
+  async searchImageDestination(query: string): Promise<any> {
+    if (!isString(query)) {
+      throw new BadRequestException(`Invalid query image format: ${query}`);
+    }
+
+    const options = {
+      method: "GET",
+      url: `https://api.pexels.com/v1/search?query=mallorca&per_page=1&page=1`,
+      headers: {
+        Authorization: process.env.PEXELS_API_KEY,
+      },
+    };
+
+    try {
+      const response = await axios.request(options);
+      console.log(response);
+      return response?.data.photos[0]?.src.large2x;
+    } catch (error) {
+      throw new HttpException(
+        error.response?.data || "Error fetching data from Weather API",
+        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 }

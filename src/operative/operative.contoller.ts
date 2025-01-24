@@ -46,9 +46,15 @@ export class OperativeController {
   @ApiOperation({ summary: "Send an email" })
   @Post("email")
   @ApiBody({ type: SendEmailDto })
-  //@UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async sendEmail(@Body() sendEmail: SendEmailDto) {
     return this.operativeService.sendEmail(sendEmail);
+  }
+
+  @ApiOperation({ summary: "Get image" })
+  @UseGuards(JwtAuthGuard)
+  @Get("image")
+  getDestination(@Query("query") query: string) {
+    return this.operativeService.searchImageDestination(query);
   }
 }
