@@ -9,7 +9,21 @@ datasource db {
   provider = "postgresql"
   url       = env("DATABASE_URL")
   // directUrl = env("DIRECT_URL")
+}
 
+enum DETAILS_TYPE {
+  FLIGHT
+  TRANSFER
+  REN_CAR
+  BOAT
+  HOTEL
+  TRIP
+  OTHER
+}
+
+enum LANGUAGE_TYPE {
+  ES
+  EN
 }
 
 model User {
@@ -20,7 +34,8 @@ model User {
   phone              String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
-  avatar             String?
+  avatar             String? 
+  language           LANGUAGE_TYPE @default(ES)
   itinerary  Itinerary[]
 }
 
@@ -37,19 +52,9 @@ model Itinerary {
   items     Details[]
 }
 
-enum DetailsType {
-  FLIGHT
-  TRANSFER
-  REN_CAR
-  BOAT
-  HOTEL
-  TRIP
-  OTHER
-}
-
 model Details {
   id               Int      @id @default(autoincrement())
-  type             DetailsType @default(FLIGHT)
+  type             DETAILS_TYPE @default(FLIGHT)
   days             Int       @default(0)
   startDate        DateTime  @updatedAt
   endDate          DateTime? @updatedAt
