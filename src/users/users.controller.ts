@@ -19,6 +19,8 @@ import {
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateLanguageDto } from "./dto/language.dto";
+import { UpdatePasswordDto } from "./dto/password.dto";
+import { UpdateUserDetailsDto } from "./dto/profile-edit.dto";
 import { UpdateUserDto } from "./dto/update-user";
 import { UsersService } from "./users.service";
 
@@ -59,8 +61,8 @@ export class UsersController {
   @ApiOperation({ summary: "Update a user" })
   @UseGuards(JwtAuthGuard)
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
+  @ApiBody({ type: UpdateUserDto })
   @Put(":id")
-  //   @ApiBody({ type: UpdateUserDto })
   async updatePutUser(@Param("id") id: number, @Body() data: UpdateUserDto) {
     return this.usersService.updatePutUser(id, data);
   }
@@ -74,6 +76,7 @@ export class UsersController {
 
   @ApiOperation({ summary: "Update user language" })
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
+  @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateLanguageDto })
   @Patch(":id/language")
   async updateLanguage(
@@ -81,5 +84,29 @@ export class UsersController {
     @Body() data: UpdateLanguageDto
   ) {
     return this.usersService.updateLanguage(id, data);
+  }
+
+  @Patch(":id/password")
+  @ApiOperation({ summary: "Update user password" })
+  @ApiParam({ name: "id", type: Number, description: "ID of the user" })
+  @UseGuards(JwtAuthGuard)
+  @ApiBody({ type: UpdatePasswordDto })
+  async updatePassword(
+    @Param("id") id: number,
+    @Body() data: UpdatePasswordDto
+  ) {
+    return this.usersService.updatePassword(id, data);
+  }
+
+  @Patch(":id/details")
+  @ApiOperation({ summary: "Update user details" })
+  @ApiParam({ name: "id", type: Number, description: "ID of the user" })
+  @UseGuards(JwtAuthGuard)
+  @ApiBody({ type: UpdateUserDetailsDto })
+  async updateUserDetails(
+    @Param("id") id: number,
+    @Body() data: UpdateUserDetailsDto
+  ) {
+    return this.usersService.updateUserDetails(id, data);
   }
 }

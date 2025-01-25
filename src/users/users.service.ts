@@ -4,6 +4,8 @@ import { isEmail, isNumber } from "class-validator";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateLanguageDto } from "./dto/language.dto";
+import { UpdatePasswordDto } from "./dto/password.dto";
+import { UpdateUserDetailsDto } from "./dto/profile-edit.dto";
 import { UpdateUserDto } from "./dto/update-user";
 
 @Injectable()
@@ -91,6 +93,37 @@ export class UsersService {
       data: {
         language: data.language,
       },
+    });
+  }
+
+  async updatePassword(id: number, data: UpdatePasswordDto): Promise<User> {
+    if (!Number.isInteger(id)) {
+      throw new BadRequestException(`Invalid user ID format: ${id}`);
+    }
+
+    return this.prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        password: data.password,
+      },
+    });
+  }
+
+  async updateUserDetails(
+    id: number,
+    data: UpdateUserDetailsDto
+  ): Promise<User> {
+    if (!Number.isInteger(id)) {
+      throw new BadRequestException(`Invalid user ID format: ${id}`);
+    }
+
+    return this.prisma.user.update({
+      where: {
+        id,
+      },
+      data,
     });
   }
 }
