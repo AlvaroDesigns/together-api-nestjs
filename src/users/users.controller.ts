@@ -6,12 +6,18 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   UseGuards,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Prisma } from "@prisma/client";
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user";
 import { UsersService } from "./users.service";
 
 @ApiTags("Users")
@@ -25,6 +31,13 @@ export class UsersController {
   @Get("user/all")
   findOnlyAll() {
     return this.usersService.getOnlyUsers();
+  }
+
+  @ApiOperation({ summary: "Get user Single" })
+  @UseGuards(JwtAuthGuard)
+  @Get("user/:email")
+  findOneSingle(@Param("email") email: string) {
+    return this.usersService.findOneSingle(email);
   }
 
   @ApiOperation({ summary: "Get user" })
@@ -44,8 +57,17 @@ export class UsersController {
   @ApiOperation({ summary: "Editar user" })
   @UseGuards(JwtAuthGuard)
   @Patch("user/:id")
-  updateUser(@Param("id") id: string, @Body() data: Prisma.UserUpdateInput) {
+  updateUser(@Param("id") id: string, @Body() data: UpdateUserDto) {
     return this.usersService.updateUser(+id, data);
+  }
+
+  @ApiOperation({ summary: "Update a user" })
+  @UseGuards(JwtAuthGuard)
+  @ApiParam({ name: "id", type: Number, description: "ID of the user" })
+  @Put(":id")
+  //   @ApiBody({ type: UpdateUserDto })
+  async updatePutUser(@Param("id") id: number, @Body() data: UpdateUserDto) {
+    return this.usersService.updatePutUser(id, data);
   }
 
   @ApiOperation({ summary: "Delete user" })
