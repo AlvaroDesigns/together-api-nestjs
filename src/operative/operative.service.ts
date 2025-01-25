@@ -166,8 +166,10 @@ export class OperativeService {
 
     try {
       const response = await axios.request(options);
-      console.log(response);
-      return response?.data.photos[0]?.src.large2x;
+
+      return {
+        src: response?.data.photos[0]?.src.large2x,
+      };
     } catch (error) {
       throw new HttpException(
         error.response?.data || "Error fetching data from Weather API",
