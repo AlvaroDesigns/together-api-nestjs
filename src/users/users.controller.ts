@@ -11,12 +11,14 @@ import {
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiParam,
   ApiTags,
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateLanguageDto } from "./dto/language.dto";
 import { UpdateUserDto } from "./dto/update-user";
 import { UsersService } from "./users.service";
 
@@ -68,5 +70,16 @@ export class UsersController {
   @Delete("user/:id")
   removeUser(@Param("id") id: string) {
     return this.usersService.deleteUser(+id);
+  }
+
+  @ApiOperation({ summary: "Update user language" })
+  @ApiParam({ name: "id", type: Number, description: "ID of the user" })
+  @ApiBody({ type: UpdateLanguageDto })
+  @Patch(":id/language")
+  async updateLanguage(
+    @Param("id") id: number,
+    @Body() data: UpdateLanguageDto
+  ) {
+    return this.usersService.updateLanguage(id, data);
   }
 }
