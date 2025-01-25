@@ -33,13 +33,6 @@ export class UsersController {
     return this.usersService.getOnlyUsers();
   }
 
-  @ApiOperation({ summary: "Get user Single" })
-  @UseGuards(JwtAuthGuard)
-  @Get("user/:email")
-  findOneSingle(@Param("email") email: string) {
-    return this.usersService.findOneSingle(email);
-  }
-
   @ApiOperation({ summary: "Get user" })
   @UseGuards(JwtAuthGuard)
   @Get("user/:email")

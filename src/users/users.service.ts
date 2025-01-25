@@ -24,20 +24,6 @@ export class UsersService {
     });
   }
 
-  async findOneSingle(email: string): Promise<User> {
-    // Verificar si el email es válido
-    if (!isEmail(email)) {
-      throw new BadRequestException(`Invalid email format: ${email}`);
-    }
-
-    return this.prisma.user.findUnique({
-      where: {
-        email,
-      },
-      include: { itinerary: false },
-    });
-  }
-
   async findOne(email: string): Promise<User> {
     // Verificar si el email es válido
     if (!isEmail(email)) {
