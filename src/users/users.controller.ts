@@ -98,8 +98,8 @@ export class UsersController {
     return this.usersService.updatePassword(id, data);
   }
 
-  @Patch("user/:id/details")
-  @ApiOperation({ summary: "Update user details" })
+  @Patch("user/:id/account")
+  @ApiOperation({ summary: "Update user account" })
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
   @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateUserDetailsDto })
