@@ -78,7 +78,7 @@ export class UsersController {
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
   @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateLanguageDto })
-  @Patch(":id/language")
+  @Patch("user/:id/language")
   async updateLanguage(
     @Param("id") id: number,
     @Body() data: UpdateLanguageDto
@@ -86,7 +86,7 @@ export class UsersController {
     return this.usersService.updateLanguage(id, data);
   }
 
-  @Patch(":id/password")
+  @Patch("user/:id/password")
   @ApiOperation({ summary: "Update user password" })
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
   @UseGuards(JwtAuthGuard)
@@ -98,7 +98,7 @@ export class UsersController {
     return this.usersService.updatePassword(id, data);
   }
 
-  @Patch(":id/details")
+  @Patch("user/:id/details")
   @ApiOperation({ summary: "Update user details" })
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
   @UseGuards(JwtAuthGuard)
