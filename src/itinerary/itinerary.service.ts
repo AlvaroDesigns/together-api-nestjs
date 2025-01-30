@@ -27,7 +27,7 @@ export class ItinerariesService {
   async getId(where: Prisma.ItineraryWhereUniqueInput): Promise<Itinerary> {
     return this.prisma.itinerary.findUnique({
       where: { id: where.id },
-      include: { items: true },
+      include: { items: true, budget: true },
     });
   }
 
