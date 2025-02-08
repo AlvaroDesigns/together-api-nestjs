@@ -158,7 +158,7 @@ export class OperativeService {
 
     const options = {
       method: "GET",
-      url: `https://api.pexels.com/v1/search?query=mallorca&per_page=1&page=1`,
+      url: `https://api.pexels.com/v1/search?query=${query}&per_page=1&page=1`,
       headers: {
         Authorization: process.env.PEXELS_API_KEY,
       },
