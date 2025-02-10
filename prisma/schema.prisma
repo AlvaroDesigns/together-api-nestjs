@@ -57,7 +57,7 @@ model Details {
   id               Int      @id @default(autoincrement())
   type             DETAILS_TYPE @default(FLIGHT)
   days             Int       @default(0)
-  startDate        DateTime  @updatedAt
+  startDate        DateTime?  @updatedAt
   endDate          DateTime? @updatedAt
   departure        String?
   departureLabel   String?
