@@ -48,6 +48,12 @@ export class ItinerariesService {
   @Delete()
   @ApiOperation({ summary: "Delete a Itinerary" })
   async delete(where: Prisma.ItineraryWhereUniqueInput): Promise<Itinerary> {
+    // Eliminar primero los detalles asociados al itinerario
+    await this.prisma.details.deleteMany({
+      where: { itineraryId: where.id },
+    });
+
+    // Luego eliminar el itinerario
     return this.prisma.itinerary.delete({
       where,
     });
@@ -63,7 +69,7 @@ export class ItinerariesService {
     }
 
     // Crear el itinerario asociado al usuario
-    return this.prisma.itinerary.create({
+    await this.prisma.itinerary.create({
       data: {
         title: data.title,
         days: data.days,
@@ -74,6 +80,8 @@ export class ItinerariesService {
         user: { connect: { id: userId } },
       },
     });
+
+    return this.prisma.itinerary.findMany();
   }
 
   @Post()
@@ -89,13 +97,15 @@ export class ItinerariesService {
     }
 
     // Crear el itinerario asociado al usuario
-    return this.prisma.details.create({
+    await this.prisma.details.create({
       data: {
         ...data,
         type: data.type as DetailsType,
         itinerary: { connect: { id: Number(itineraryId) } },
       },
     });
+
+    return this.prisma.details.findMany();
   }
 
   @Patch()

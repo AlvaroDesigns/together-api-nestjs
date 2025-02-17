@@ -68,13 +68,12 @@ export class ItinerariesController {
   }
 
   @ApiOperation({ summary: "Remove itinerary" })
-  @ApiBody({ type: CreateItineraryDto })
+  @UseGuards(JwtAuthGuard)
   @ApiParam({
     name: "id",
     type: String,
     description: "ID of the itinerary",
   })
-  @UseGuards(JwtAuthGuard)
   @Delete(":id")
   async deleteItinerary(@Param("id") id: string): Promise<Itinerary> {
     return this.itineraryService.delete({ id: Number(id) });

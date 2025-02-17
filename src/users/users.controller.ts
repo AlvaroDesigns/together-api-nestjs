@@ -26,20 +26,20 @@ import { UsersService } from "./users.service";
 
 @ApiTags("Users")
 @ApiBearerAuth()
-@Controller("v1")
+@Controller("v1/user")
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @ApiOperation({ summary: "Deprecated" })
   @UseGuards(JwtAuthGuard)
-  @Get("user/all")
+  @Get("all")
   findOnlyAll() {
     return this.usersService.getOnlyUsers();
   }
 
   @ApiOperation({ summary: "Get user" })
   @UseGuards(JwtAuthGuard)
-  @Get("user/:email")
+  @Get(":email")
   findOne(@Param("email") email: string) {
     return this.usersService.findOne(email);
   }
@@ -53,7 +53,7 @@ export class UsersController {
 
   @ApiOperation({ summary: "Editar user" })
   @UseGuards(JwtAuthGuard)
-  @Patch("user/:id")
+  @Patch(":id")
   updateUser(@Param("id") id: string, @Body() data: UpdateUserDto) {
     return this.usersService.updateUser(+id, data);
   }
@@ -69,7 +69,8 @@ export class UsersController {
 
   @ApiOperation({ summary: "Delete user" })
   @UseGuards(JwtAuthGuard)
-  @Delete("user/:id")
+  @ApiParam({ name: "id", type: Number, description: "ID of the user" })
+  @Delete(":id")
   removeUser(@Param("id") id: string) {
     return this.usersService.deleteUser(+id);
   }
@@ -78,7 +79,7 @@ export class UsersController {
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
   @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateLanguageDto })
-  @Patch("user/:id/language")
+  @Patch(":id/language")
   async updateLanguage(
     @Param("id") id: number,
     @Body() data: UpdateLanguageDto
@@ -86,7 +87,7 @@ export class UsersController {
     return this.usersService.updateLanguage(id, data);
   }
 
-  @Patch("user/:id/password")
+  @Patch(":id/password")
   @ApiOperation({ summary: "Update user password" })
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
   @UseGuards(JwtAuthGuard)
@@ -98,7 +99,7 @@ export class UsersController {
     return this.usersService.updatePassword(id, data);
   }
 
-  @Patch("user/:id/account")
+  @Patch(":id/account")
   @ApiOperation({ summary: "Update user account" })
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
   @UseGuards(JwtAuthGuard)
