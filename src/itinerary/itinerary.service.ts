@@ -47,7 +47,7 @@ export class ItinerariesService {
 
   @Delete()
   @ApiOperation({ summary: "Delete a Itinerary" })
-  async delete(where: Prisma.ItineraryWhereUniqueInput): Promise<Itinerary[]> {
+  async delete(where: Prisma.ItineraryWhereUniqueInput): Promise<Itinerary> {
     // Eliminar primero los detalles asociados al itinerario
     await this.prisma.details.deleteMany({
       where: { itineraryId: where.id },
@@ -59,7 +59,9 @@ export class ItinerariesService {
     });
 
     // Devolver la lista actualizada de itinerarios
-    return this.prisma.itinerary.findMany();
+    return this.prisma.itinerary.findUnique({
+      where: { id: where.id },
+    });
   }
 
   @Post()
