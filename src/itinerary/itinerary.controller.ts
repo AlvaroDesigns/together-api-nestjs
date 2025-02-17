@@ -75,7 +75,7 @@ export class ItinerariesController {
     description: "ID of the itinerary",
   })
   @Delete(":id")
-  async deleteItinerary(@Param("id") id: string): Promise<Itinerary> {
+  async delete(@Param("id") id: string): Promise<Itinerary[]> {
     return this.itineraryService.delete({ id: Number(id) });
   }
 
