@@ -86,7 +86,9 @@ export class ItinerariesService {
       },
     });
 
-    return this.prisma.itinerary.findMany();
+    return this.prisma.itinerary.findUnique({
+      where: { id: Number(userId) },
+    });
   }
 
   @Post()
@@ -110,7 +112,9 @@ export class ItinerariesService {
       },
     });
 
-    return this.prisma.details.findMany();
+    return this.prisma.details.findUnique({
+      where: { id: Number(itineraryId) },
+    });
   }
 
   @Patch()
