@@ -36,18 +36,23 @@ export class ItinerariesService {
   async update(params: {
     where: Prisma.ItineraryWhereUniqueInput;
     data: Prisma.ItineraryUpdateInput;
-  }): Promise<Itinerary> {
+  }): Promise<Itinerary[]> {
     const { data, where } = params;
 
-    return this.prisma.itinerary.update({
+    await this.prisma.itinerary.update({
       data,
       where,
+    });
+
+    return await this.prisma.itinerary.findMany({
+      where: { id: where.id },
+      orderBy: { date: "desc" },
     });
   }
 
   @Delete()
   @ApiOperation({ summary: "Delete a Itinerary" })
-  async delete(where: Prisma.ItineraryWhereUniqueInput): Promise<Itinerary> {
+  async delete(where: Prisma.ItineraryWhereUniqueInput): Promise<Itinerary[]> {
     // Eliminar primero los detalles asociados al itinerario
     await this.prisma.details.deleteMany({
       where: { itineraryId: where.id },
@@ -58,9 +63,9 @@ export class ItinerariesService {
       where,
     });
 
-    // Devolver la lista actualizada de itinerarios
-    return this.prisma.itinerary.findUnique({
+    return await this.prisma.itinerary.findMany({
       where: { id: where.id },
+      orderBy: { date: "desc" },
     });
   }
 
@@ -86,8 +91,9 @@ export class ItinerariesService {
       },
     });
 
-    return this.prisma.itinerary.findUnique({
-      where: { id: Number(userId) },
+    return await this.prisma.itinerary.findMany({
+      where: { userId: userId },
+      orderBy: { date: "desc" },
     });
   }
 
@@ -112,7 +118,7 @@ export class ItinerariesService {
       },
     });
 
-    return this.prisma.details.findUnique({
+    return await this.prisma.details.findMany({
       where: { id: Number(itineraryId) },
     });
   }
@@ -130,12 +136,16 @@ export class ItinerariesService {
     }
 
     // Crear el itinerario asociado al usuario
-    return this.prisma.details.update({
+    await this.prisma.details.update({
       where: { id: Number(itineraryId) },
       data: {
         ...data,
         type: data.type as DetailsType,
       },
+    });
+
+    return await this.prisma.details.findMany({
+      where: { id: Number(itineraryId) },
     });
   }
 }
