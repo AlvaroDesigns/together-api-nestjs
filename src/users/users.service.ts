@@ -37,7 +37,13 @@ export class UsersService {
       where: {
         email,
       },
-      include: { itinerary: true },
+      include: {
+        itinerary: {
+          orderBy: {
+            date: "desc",
+          },
+        },
+      },
     });
   }
 
