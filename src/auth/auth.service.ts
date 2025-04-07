@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -38,6 +38,25 @@ export class AuthService {
       throw new Error("La contraseña es incorrecta");
 */
     return this.createToken(user);
+  }
+
+  async refreshToken(token: string) {
+    try {
+      const payload = this.jwtService.verify(token);
+
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub },
+      });
+
+      if (!user) {
+        throw new UnauthorizedException("Usuario no encontrado");
+      }
+
+      // Generar un nuevo token de acceso
+      return this.createToken(user);
+    } catch (error) {
+      throw new UnauthorizedException("Refresh token inválido o expirado");
+    }
   }
 
   // Generar token JWT

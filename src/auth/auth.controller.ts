@@ -29,4 +29,14 @@ export class AuthController {
   async login(@Body() data: LoginDto) {
     return this.authService.login(data);
   }
+
+  @ApiOperation({ summary: "refresh token" })
+  @ApiBody({
+    schema: { type: "object", properties: { token: { type: "string" } } },
+  })
+  @Post("refresh")
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async refreshToken(@Body("token") token: string) {
+    return this.authService.refreshToken(token);
+  }
 }
