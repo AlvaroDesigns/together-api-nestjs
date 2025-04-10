@@ -31,7 +31,6 @@ export class ItinerariesService {
         items: {
           orderBy: [
             {
-              // Los que son OTHER van primero (true > false si se usa asc)
               type: "asc",
             },
             {
@@ -115,24 +114,24 @@ export class ItinerariesService {
   async createDetails(itineraryId: number, data: CreateDetailsDto) {
     // Verificar si el itinerario existe
     const itinerary = await this.prisma.itinerary.findUnique({
-      where: { id: Number(itineraryId) },
+      where: { id: itineraryId },
     });
 
     if (!itinerary) {
       throw new NotFoundException(`Itinerary with ID ${itineraryId} not found`);
     }
 
-    // Crear el itinerario asociado al usuario
+    // Crear los detalles asociados al itinerario
     await this.prisma.details.create({
       data: {
         ...data,
         type: data.type as DetailsType,
-        itinerary: { connect: { id: Number(itineraryId) } },
+        itinerary: { connect: { id: itineraryId } },
       },
     });
 
     return await this.prisma.details.findMany({
-      where: { id: Number(itineraryId) },
+      where: { itineraryId }, // Buscar por itineraryId, no por id
     });
   }
 
@@ -140,17 +139,19 @@ export class ItinerariesService {
   @ApiOperation({ summary: "Edit a Details" })
   async updateDetails(itineraryId: number, data: CreateDetailsDto) {
     // Verificar si los detalles existen
-    const details = await this.prisma.details.findUnique({
-      where: { id: Number(itineraryId) },
+    const details = await this.prisma.details.findFirst({
+      where: { itineraryId }, // Buscar por itineraryId, no por id
     });
 
     if (!details) {
-      throw new NotFoundException(`Details with ID ${itineraryId} not found`);
+      throw new NotFoundException(
+        `Details with itinerary ID ${itineraryId} not found`
+      );
     }
 
-    // Crear el itinerario asociado al usuario
-    await this.prisma.details.update({
-      where: { id: Number(itineraryId) },
+    // Actualizar los detalles asociados al itinerario
+    await this.prisma.details.updateMany({
+      where: { itineraryId }, // Actualizar por itineraryId
       data: {
         ...data,
         type: data.type as DetailsType,
@@ -158,7 +159,7 @@ export class ItinerariesService {
     });
 
     return await this.prisma.details.findMany({
-      where: { id: Number(itineraryId) },
+      where: { itineraryId }, // Retornar los detalles por itineraryId
     });
   }
 }

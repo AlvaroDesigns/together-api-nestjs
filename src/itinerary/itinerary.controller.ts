@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   UseGuards,
@@ -44,8 +45,8 @@ export class ItinerariesController {
     description: "ID of the itinerary",
   })
   @Get("details/:id")
-  async getId(@Param("id") id: number): Promise<Itinerary> {
-    return this.itineraryService.getId({ id: Number(id) });
+  async getId(@Param("id", ParseIntPipe) id: number): Promise<Itinerary> {
+    return this.itineraryService.getId({ id });
   }
 
   @ApiOperation({ summary: "Edit itinerary" })
@@ -109,7 +110,7 @@ export class ItinerariesController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async createDetails(
-    @Param("itineraryId") itineraryId: number,
+    @Param("itineraryId", ParseIntPipe) itineraryId: number,
     @Body() createDetailsDto: CreateDetailsDto
   ) {
     return this.itineraryService.createDetails(itineraryId, createDetailsDto);
@@ -126,7 +127,7 @@ export class ItinerariesController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async updateDetails(
-    @Param("itineraryId") itineraryId: number,
+    @Param("itineraryId", ParseIntPipe) itineraryId: number,
     @Body() createDetailsDto: CreateDetailsDto
   ) {
     return this.itineraryService.updateDetails(itineraryId, createDetailsDto);
