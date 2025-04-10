@@ -34,7 +34,7 @@ export class ItinerariesController {
   @UseGuards(JwtAuthGuard)
   @Get()
   async getPublishedPosts(): Promise<Itinerary[]> {
-    return this.itineraryService.getAll();
+    return this.itineraryService.getAllOrdered();
   }
 
   @ApiOperation({ summary: "get id itinerary details" })

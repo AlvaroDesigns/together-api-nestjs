@@ -17,9 +17,15 @@ export class ItinerariesService {
   constructor(private prisma: PrismaService) {}
 
   @Get()
-  @ApiOperation({ summary: "Update only Itinerary " })
-  async getAll(): Promise<Itinerary[]> {
-    return this.prisma.itinerary.findMany();
+  @ApiOperation({ summary: "Get all itineraries ordered" })
+  async getAllOrdered(): Promise<Itinerary[]> {
+    return this.prisma.itinerary.findMany({
+      orderBy: [
+        {
+          date: "desc",
+        },
+      ],
+    });
   }
 
   @Get()
@@ -132,6 +138,11 @@ export class ItinerariesService {
 
     return await this.prisma.details.findMany({
       where: { itineraryId }, // Buscar por itineraryId, no por id
+      orderBy: [
+        {
+          startDate: "desc",
+        },
+      ],
     });
   }
 
@@ -160,6 +171,11 @@ export class ItinerariesService {
 
     return await this.prisma.details.findMany({
       where: { itineraryId }, // Retornar los detalles por itineraryId
+      orderBy: [
+        {
+          startDate: "desc",
+        },
+      ],
     });
   }
 }
