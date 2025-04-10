@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Put,
@@ -54,8 +55,11 @@ export class UsersController {
   @ApiOperation({ summary: "Editar user" })
   @UseGuards(JwtAuthGuard)
   @Patch(":id")
-  updateUser(@Param("id") id: string, @Body() data: UpdateUserDto) {
-    return this.usersService.updateUser(+id, data);
+  updateUser(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() data: UpdateUserDto
+  ) {
+    return this.usersService.updateUser(id, data);
   }
 
   @ApiOperation({ summary: "Update a user" })
@@ -63,7 +67,10 @@ export class UsersController {
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
   @ApiBody({ type: UpdateUserDto })
   @Put(":id")
-  async updatePutUser(@Param("id") id: number, @Body() data: UpdateUserDto) {
+  async updatePutUser(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() data: UpdateUserDto
+  ) {
     return this.usersService.updatePutUser(id, data);
   }
 
@@ -71,8 +78,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiParam({ name: "id", type: Number, description: "ID of the user" })
   @Delete(":id")
-  removeUser(@Param("id") id: string) {
-    return this.usersService.deleteUser(+id);
+  removeUser(@Param("id", ParseIntPipe) id: number) {
+    return this.usersService.deleteUser(id);
   }
 
   @ApiOperation({ summary: "Update user language" })
@@ -81,7 +88,7 @@ export class UsersController {
   @ApiBody({ type: UpdateLanguageDto })
   @Patch(":id/language")
   async updateLanguage(
-    @Param("id") id: number,
+    @Param("id", ParseIntPipe) id: number,
     @Body() data: UpdateLanguageDto
   ) {
     return this.usersService.updateLanguage(id, data);
@@ -93,7 +100,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdatePasswordDto })
   async updatePassword(
-    @Param("id") id: number,
+    @Param("id", ParseIntPipe) id: number,
     @Body() data: UpdatePasswordDto
   ) {
     return this.usersService.updatePassword(id, data);
@@ -105,9 +112,10 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBody({ type: UpdateUserDetailsDto })
   async updateUserDetails(
-    @Param("id") id: number,
+    @Param("id", ParseIntPipe) id: number,
     @Body() data: UpdateUserDetailsDto
   ) {
+    console.log("----------", id, data);
     return this.usersService.updateUserDetails(id, data);
   }
 }

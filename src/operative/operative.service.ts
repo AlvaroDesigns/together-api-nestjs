@@ -51,7 +51,7 @@ export class OperativeService {
       throw new BadRequestException(`Invalid query weather format: ${query}`);
     }
 
-    const API_KEY = process.env.APIKEY_WEATHER;
+    const API_KEY = process.env.WEATHER_API_KEY;
 
     const name = query.split(" ").join("_");
 
