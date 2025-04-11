@@ -52,84 +52,103 @@ export class ItinerariesController {
   @ApiOperation({ summary: "Edit itinerary" })
   @ApiBody({ type: CreateItineraryDto })
   @ApiParam({
-    name: "id",
+    name: "itineraryId",
     type: String,
     description: "ID of the itinerary",
   })
   @UseGuards(JwtAuthGuard)
-  @Patch(":id")
+  @Patch(":itineraryId")
   updateItinerary(
-    @Param("id") id: string,
+    @Param("itineraryId") itineraryId: string,
     @Body() data: Prisma.ItineraryUpdateInput
   ) {
     return this.itineraryService.update({
-      where: { id: Number(id) },
+      where: { id: Number(itineraryId) },
       data,
     });
   }
 
+  @Delete(":itineraryId")
   @ApiOperation({ summary: "Remove itinerary" })
   @UseGuards(JwtAuthGuard)
   @ApiParam({
-    name: "id",
+    name: "itineraryId",
     type: String,
     description: "ID of the itinerary",
   })
-  @Delete(":id")
-  async delete(@Param("id") id: string): Promise<Itinerary[]> {
-    return this.itineraryService.delete({ id: Number(id) });
+  async delete(
+    @Param("itineraryId") itineraryId: string
+  ): Promise<Itinerary[]> {
+    return this.itineraryService.delete({ id: Number(itineraryId) });
   }
 
-  @Post(":userId")
+  @Post(":itineraryId")
   @ApiOperation({ summary: "Create itinerary" })
   @ApiBody({ type: CreateItineraryDto })
   @ApiParam({
-    name: "userId",
+    name: "itineraryId",
     type: String,
     description: "ID of the itinerary",
   })
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async createItinerary(
-    @Param("userId") userId: string,
+    @Param("itineraryId") itineraryId: string,
     @Body() itinerary: CreateItineraryDto
   ) {
-    const numericUserId = parseInt(userId, 10);
+    const numericUserId = parseInt(itineraryId, 10);
 
     return this.itineraryService.create(numericUserId, itinerary);
   }
 
-  @Post("details/:itineraryId")
+  @Post("details/:detailsId")
   @ApiOperation({ summary: "Create details" })
   @ApiBody({ type: CreateDetailsDto })
   @ApiParam({
-    name: "itineraryId",
+    name: "detailsId",
     type: String,
     description: "ID of the itinerary",
   })
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async createDetails(
-    @Param("itineraryId", ParseIntPipe) itineraryId: number,
+    @Param("detailsId", ParseIntPipe) detailsId: number,
     @Body() createDetailsDto: CreateDetailsDto
   ) {
-    return this.itineraryService.createDetails(itineraryId, createDetailsDto);
+    return this.itineraryService.createDetails(detailsId, createDetailsDto);
   }
 
-  @Patch("/details/:itineraryId")
+  @Patch("/details/:detailsId")
   @ApiOperation({ summary: "Update details" })
   @ApiBody({ type: CreateDetailsDto })
   @ApiParam({
-    name: "itineraryId",
+    name: "detailsId",
     type: String,
     description: "ID of the itinerary",
   })
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async updateDetails(
-    @Param("itineraryId", ParseIntPipe) itineraryId: number,
+    @Param("detailsId", ParseIntPipe) detailsId: number,
     @Body() createDetailsDto: CreateDetailsDto
   ) {
-    return this.itineraryService.updateDetails(itineraryId, createDetailsDto);
+    return this.itineraryService.updateDetails(detailsId, createDetailsDto);
+  }
+
+  @Delete("/details/:detailsId")
+  @ApiOperation({ summary: "Delete details" })
+  @ApiBody({ type: CreateDetailsDto })
+  @ApiParam({
+    name: "detailsId",
+    type: String,
+    description: "ID of the itinerary",
+  })
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async deleteDetails(
+    @Param("detailsId", ParseIntPipe) detailsId: number,
+    @Body() createDetailsDto: CreateDetailsDto
+  ) {
+    return this.itineraryService.deleteDetails(detailsId, createDetailsDto);
   }
 }

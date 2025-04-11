@@ -137,7 +137,7 @@ export class ItinerariesService {
     });
 
     return await this.prisma.details.findMany({
-      where: { itineraryId }, // Buscar por itineraryId, no por id
+      where: { id: itineraryId }, // Buscar por id en lugar de itineraryId
       orderBy: [
         {
           startDate: "desc",
@@ -150,8 +150,8 @@ export class ItinerariesService {
   @ApiOperation({ summary: "Edit a Details" })
   async updateDetails(itineraryId: number, data: CreateDetailsDto) {
     // Verificar si los detalles existen
-    const details = await this.prisma.details.findFirst({
-      where: { itineraryId }, // Buscar por itineraryId, no por id
+    const details = await this.prisma.details.findUnique({
+      where: { id: itineraryId },
     });
 
     if (!details) {
@@ -160,17 +160,42 @@ export class ItinerariesService {
       );
     }
 
-    // Actualizar los detalles asociados al itinerario
     await this.prisma.details.updateMany({
-      where: { itineraryId }, // Actualizar por itineraryId
+      where: { id: itineraryId },
       data: {
         ...data,
         type: data.type as DetailsType,
       },
     });
 
-    return await this.prisma.details.findMany({
-      where: { itineraryId }, // Retornar los detalles por itineraryId
+    return this.prisma.details.findMany({
+      orderBy: [
+        {
+          startDate: "desc",
+        },
+      ],
+    });
+  }
+
+  @Patch()
+  @ApiOperation({ summary: "Delete a Details" })
+  async deleteDetails(itineraryId: number, data: CreateDetailsDto) {
+    const details = await this.prisma.details.findUnique({
+      where: { id: itineraryId },
+    });
+
+    if (!details) {
+      throw new NotFoundException(
+        `Details with itinerary ID ${itineraryId} not found`
+      );
+    }
+    console.log("Details qyeyeyeyeye:--->", itineraryId);
+    await this.prisma.details.delete({
+      where: { id: itineraryId },
+    });
+
+    return this.prisma.details.findMany({
+      where: { itineraryId: details.itineraryId },
       orderBy: [
         {
           startDate: "desc",
