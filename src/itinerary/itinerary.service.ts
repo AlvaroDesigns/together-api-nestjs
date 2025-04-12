@@ -195,7 +195,7 @@ export class ItinerariesService {
     });
 
     return this.prisma.details.findMany({
-      where: { itineraryId: details.itineraryId },
+      where: { id: details.itineraryId },
       orderBy: [
         {
           startDate: "desc",
