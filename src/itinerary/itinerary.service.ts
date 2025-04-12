@@ -169,6 +169,7 @@ export class ItinerariesService {
     });
 
     return this.prisma.details.findMany({
+      where: { id: itineraryId },
       orderBy: [
         {
           startDate: "desc",
@@ -195,7 +196,7 @@ export class ItinerariesService {
     });
 
     return this.prisma.details.findMany({
-      where: { id: details.itineraryId },
+      where: { id: itineraryId },
       orderBy: [
         {
           startDate: "desc",

@@ -137,7 +137,6 @@ export class ItinerariesController {
 
   @Delete("/details/:detailsId")
   @ApiOperation({ summary: "Delete details" })
-  @ApiBody({ type: CreateDetailsDto })
   @ApiParam({
     name: "detailsId",
     type: String,
