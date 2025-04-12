@@ -145,10 +145,7 @@ export class ItinerariesController {
   })
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  async deleteDetails(
-    @Param("detailsId", ParseIntPipe) detailsId: number,
-    @Body() createDetailsDto: CreateDetailsDto
-  ) {
-    return this.itineraryService.deleteDetails(detailsId, createDetailsDto);
+  async deleteDetails(@Param("detailsId", ParseIntPipe) detailsId: number) {
+    return this.itineraryService.deleteDetails(detailsId);
   }
 }

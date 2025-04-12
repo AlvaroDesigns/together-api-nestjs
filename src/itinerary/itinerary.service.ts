@@ -177,9 +177,9 @@ export class ItinerariesService {
     });
   }
 
-  @Patch()
+  @Delete()
   @ApiOperation({ summary: "Delete a Details" })
-  async deleteDetails(itineraryId: number, data: CreateDetailsDto) {
+  async deleteDetails(itineraryId: number) {
     const details = await this.prisma.details.findUnique({
       where: { id: itineraryId },
     });
