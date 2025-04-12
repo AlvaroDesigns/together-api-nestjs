@@ -189,7 +189,7 @@ export class ItinerariesService {
         `Details with itinerary ID ${itineraryId} not found`
       );
     }
-    console.log("Details qyeyeyeyeye:--->", itineraryId);
+
     await this.prisma.details.delete({
       where: { id: itineraryId },
     });
