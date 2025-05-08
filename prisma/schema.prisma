@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url       = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
   // directUrl = env("DIRECT_URL")
 }
 
@@ -43,7 +43,7 @@ model User {
   avatar             String? 
   language           LANGUAGE_TYPE @default(ES)
   role               ROLE_TYPE @default(USER)
-  itinerary  Itinerary[]
+  itinerary          Itinerary[]
 }
 
 model Itinerary {
@@ -64,7 +64,7 @@ model Details {
   id               Int      @id @default(autoincrement())
   type             DETAILS_TYPE @default(FLIGHT)
   days             Int       @default(0)
-  startDate        DateTime?  @updatedAt
+  startDate        DateTime? @updatedAt
   endDate          DateTime? @updatedAt
   departure        String?
   departureLabel   String?
@@ -86,9 +86,9 @@ model Details {
 }
 
 model BudgetItem {
-  id         Int      @id @default(autoincrement())
-  expensive Int
-  types     String[]
-  itinerary Itinerary @relation("ItineraryToBudget", fields: [itineraryId], references: [id], onDelete: Cascade)
-  itineraryId Int
+  id               Int      @id @default(autoincrement())
+  expensive        Int
+  types            String[]
+  itinerary        Itinerary @relation("ItineraryToBudget", fields: [itineraryId], references: [id], onDelete: Cascade)
+  itineraryId      Int
 }

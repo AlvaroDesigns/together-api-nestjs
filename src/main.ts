@@ -1,9 +1,9 @@
 import { ValidationPipe } from "@nestjs/common";
-
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { join } from "path";
+import { version } from "./../package.json";
 import { AppModule } from "./app.module";
 
 async function bootstrap() {
@@ -20,7 +20,7 @@ async function bootstrap() {
     .setDescription(
       "BFF for to provide to NN Together App the information from APIM services."
     )
-    .setVersion("1.0")
+    .setVersion(version)
     .addBearerAuth()
     .build();
 
@@ -34,6 +34,6 @@ async function bootstrap() {
   app.enableCors();
 
   const port = process.env.PORT || 3000;
-  await app.listen(port);
+  await app.listen(29);
 }
 bootstrap();

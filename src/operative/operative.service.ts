@@ -8,6 +8,14 @@ import axios from "axios";
 import { isObject, isString } from "class-validator";
 import { SendEmailDto } from "./dto/email.dto";
 
+interface DestinationResponse {
+  id: string;
+  nombre: string;
+  id_destino: string;
+  id_pais: string;
+  pais: string;
+}
+
 @Injectable()
 export class OperativeService {
   async searchDestination(query: string): Promise<any> {
@@ -32,6 +40,42 @@ export class OperativeService {
         latitude: destination?.latitude,
         longitude: destination?.longitude,
       }));
+
+      return {
+        data: destination,
+        status: response?.data.status,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        error.response?.data || "Error fetching data from Booking API",
+        error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async searchDestinations(query: string): Promise<any> {
+    if (!isString(query)) {
+      throw new BadRequestException(`Invalid query format: ${query}`);
+    }
+
+    const options = {
+      method: "GET",
+      url: `https://www.atrapalo.com/vuelos/home_buscador_ajax/origen/${query}}`,
+    };
+
+    try {
+      const response = await axios.request(options);
+
+      const destination = response?.data?.data?.map(
+        (destination: DestinationResponse) => ({
+          key: destination?.id,
+          name: destination?.nombre,
+          id: destination?.id_destino,
+          id_country: destination?.id_pais,
+          country: destination?.pais,
+        })
+      );
 
       return {
         data: destination,

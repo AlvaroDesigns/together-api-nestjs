@@ -26,6 +26,13 @@ export class OperativeController {
     return this.operativeService.searchDestination(query);
   }
 
+  @ApiOperation({ summary: "Get Directions search" })
+  @UseGuards(JwtAuthGuard)
+  @Get("directions")
+  searrcherDirections(@Query("query") query: string) {
+    return this.operativeService.searchDestinations(query);
+  }
+
   @ApiOperation({ summary: "Get Wather details" })
   @UseGuards(JwtAuthGuard)
   @Get("weather")
