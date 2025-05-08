@@ -28,7 +28,7 @@ export class OperativeController {
 
   @ApiOperation({ summary: "Get Directions search" })
   @UseGuards(JwtAuthGuard)
-  @Get("directions")
+  @Get("autocomplete")
   searrcherDirections(@Query("query") query: string) {
     return this.operativeService.searchDestinations(query);
   }
