@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "postinstall": "npx playwright install --with-deps chromium",
+    "postinstall": "if [ \"$RAILWAY_ENVIRONMENT_NAME\" != \"production\" ]; then exit 0; fi; npx playwright install --with-deps chromium",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
