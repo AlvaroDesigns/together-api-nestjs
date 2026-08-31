@@ -1,7 +1,11 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { PrismaService } from "src/prisma/prisma.service";
+import { PrismaService } from "../prisma/prisma.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 
@@ -15,11 +19,23 @@ export class AuthService {
   // Registro de usuario
   async register(body: RegisterDto) {
     const { email, password, name, phone } = body;
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException("El usuario con este correo ya existe");
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    return await this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: { email, password: hashedPassword, name, phone },
     });
+
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   // Inicio de sesión
@@ -28,21 +44,39 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({ where: { email } });
 
+    if (!user) {
+      throw new UnauthorizedException("Credenciales incorrectas");
+    }
+
     const isPasswordValid = await bcrypt.compare(
       String(password),
       String(user.password)
     );
 
-    /*
-    if (!user || !isPasswordValid)
-      throw new Error("La contraseña es incorrecta");
-*/
-    return this.createToken(user);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException("Credenciales incorrectas");
+    }
+
+    return {
+      ...this.createToken(user),
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        language: user.language,
+        avatar: user.avatar,
+      },
+    };
   }
 
   async refreshToken(token: string) {
     try {
       const payload = this.jwtService.verify(token);
+
+      if (!payload || !payload.sub) {
+        throw new UnauthorizedException("Refresh token inválido o expirado");
+      }
 
       const user = await this.prisma.user.findUnique({
         where: { id: payload.sub },
@@ -53,7 +87,17 @@ export class AuthService {
       }
 
       // Generar un nuevo token de acceso
-      return this.createToken(user);
+      return {
+        ...this.createToken(user),
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          language: user.language,
+          avatar: user.avatar,
+        },
+      };
     } catch (error) {
       throw new UnauthorizedException("Refresh token inválido o expirado");
     }

@@ -1,0 +1,11 @@
+[phases.setup]
+nixPkgs = ["openssl", "chromium", "fontconfig", "fonts-unifont"]
+
+[phases.install]
+cmds = ["npm ci", "npx prisma generate", "npx playwright install chromium || true"]
+
+[phases.build]
+cmds = ["npm run build"]
+
+[start]
+cmd = "npm run start:prod"

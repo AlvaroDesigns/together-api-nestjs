@@ -1,14 +1,6 @@
-import {
-  Delete,
-  Get,
-  Injectable,
-  NotFoundException,
-  Patch,
-  Post,
-} from "@nestjs/common";
-import { ApiOperation } from "@nestjs/swagger";
-import { Itinerary, Prisma } from "@prisma/client";
-import { PrismaService } from "src/prisma/prisma.service";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { DETAILS_TYPE, Itinerary, Prisma } from "@prisma/client";
+import { PrismaService } from "../prisma/prisma.service";
 import { CreateDetailsDto } from "./dto/create-details.dto";
 import { CreateItineraryDto } from "./dto/create-itinerary.dto";
 
@@ -16,8 +8,6 @@ import { CreateItineraryDto } from "./dto/create-itinerary.dto";
 export class ItinerariesService {
   constructor(private prisma: PrismaService) {}
 
-  @Get()
-  @ApiOperation({ summary: "Get all itineraries ordered" })
   async getAllOrdered(): Promise<Itinerary[]> {
     return this.prisma.itinerary.findMany({
       orderBy: [
@@ -28,10 +18,8 @@ export class ItinerariesService {
     });
   }
 
-  @Get()
-  @ApiOperation({ summary: "Update a Itinerary and details" })
   async getId(where: Prisma.ItineraryWhereUniqueInput): Promise<Itinerary> {
-    return this.prisma.itinerary.findUnique({
+    const itinerary = await this.prisma.itinerary.findUnique({
       where: { id: where.id },
       include: {
         items: {
@@ -47,10 +35,14 @@ export class ItinerariesService {
         budget: true,
       },
     });
+
+    if (!itinerary) {
+      throw new NotFoundException(`Itinerary with ID ${where.id} not found`);
+    }
+
+    return itinerary;
   }
 
-  @Patch()
-  @ApiOperation({ summary: "Update a Itinerary" })
   async update(params: {
     where: Prisma.ItineraryWhereUniqueInput;
     data: Prisma.ItineraryUpdateInput;
@@ -68,8 +60,6 @@ export class ItinerariesService {
     });
   }
 
-  @Delete()
-  @ApiOperation({ summary: "Delete a Itinerary" })
   async delete(where: Prisma.ItineraryWhereUniqueInput): Promise<Itinerary[]> {
     // Eliminar primero los detalles asociados al itinerario
     await this.prisma.details.deleteMany({
@@ -87,8 +77,6 @@ export class ItinerariesService {
     });
   }
 
-  @Post()
-  @ApiOperation({ summary: "Create a Itinerary" })
   async create(userId: number, data: CreateItineraryDto) {
     // Verificar si el usuario existe
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
@@ -104,7 +92,7 @@ export class ItinerariesService {
         startDate: new Date(data.startDate),
         endDate: new Date(data.endDate),
         image: data.image,
-        date: new Date(), // or any appropriate date value
+        date: new Date(),
         user: { connect: { id: userId } },
       },
     });
@@ -115,10 +103,7 @@ export class ItinerariesService {
     });
   }
 
-  @Post()
-  @ApiOperation({ summary: "Create a Details" })
   async createDetails(itineraryId: number, data: CreateDetailsDto) {
-    // Verificar si el itinerario existe
     const itinerary = await this.prisma.itinerary.findUnique({
       where: { id: itineraryId },
     });
@@ -127,17 +112,20 @@ export class ItinerariesService {
       throw new NotFoundException(`Itinerary with ID ${itineraryId} not found`);
     }
 
-    // Crear los detalles asociados al itinerario
+    const { type, startDate, endDate, ...rest } = data;
+
     await this.prisma.details.create({
       data: {
-        ...data,
-        type: data.type as DetailsType,
+        ...rest,
+        type: (type as DETAILS_TYPE) || DETAILS_TYPE.FLIGHT,
+        startDate: startDate ? new Date(startDate) : undefined,
+        endDate: endDate ? new Date(endDate) : undefined,
         itinerary: { connect: { id: itineraryId } },
       },
     });
 
     return await this.prisma.details.findMany({
-      where: { id: itineraryId }, // Buscar por id en lugar de itineraryId
+      where: { itineraryId: itineraryId },
       orderBy: [
         {
           startDate: "desc",
@@ -146,30 +134,29 @@ export class ItinerariesService {
     });
   }
 
-  @Patch()
-  @ApiOperation({ summary: "Edit a Details" })
-  async updateDetails(itineraryId: number, data: CreateDetailsDto) {
-    // Verificar si los detalles existen
+  async updateDetails(detailsId: number, data: CreateDetailsDto) {
     const details = await this.prisma.details.findUnique({
-      where: { id: itineraryId },
+      where: { id: detailsId },
     });
 
     if (!details) {
-      throw new NotFoundException(
-        `Details with itinerary ID ${itineraryId} not found`
-      );
+      throw new NotFoundException(`Details with ID ${detailsId} not found`);
     }
 
-    await this.prisma.details.updateMany({
-      where: { id: itineraryId },
+    const { type, startDate, endDate, ...rest } = data;
+
+    await this.prisma.details.update({
+      where: { id: detailsId },
       data: {
-        ...data,
-        type: data.type as DetailsType,
+        ...rest,
+        type: type ? (type as DETAILS_TYPE) : undefined,
+        startDate: startDate ? new Date(startDate) : undefined,
+        endDate: endDate ? new Date(endDate) : undefined,
       },
     });
 
     return this.prisma.details.findMany({
-      where: { id: itineraryId },
+      where: { itineraryId: details.itineraryId },
       orderBy: [
         {
           startDate: "desc",
@@ -178,25 +165,21 @@ export class ItinerariesService {
     });
   }
 
-  @Delete()
-  @ApiOperation({ summary: "Delete a Details" })
-  async deleteDetails(itineraryId: number) {
+  async deleteDetails(detailsId: number) {
     const details = await this.prisma.details.findUnique({
-      where: { id: itineraryId },
+      where: { id: detailsId },
     });
 
     if (!details) {
-      throw new NotFoundException(
-        `Details with itinerary ID ${itineraryId} not found`
-      );
+      throw new NotFoundException(`Details with ID ${detailsId} not found`);
     }
 
     await this.prisma.details.delete({
-      where: { id: itineraryId },
+      where: { id: detailsId },
     });
 
     return this.prisma.details.findMany({
-      where: { id: itineraryId },
+      where: { itineraryId: details.itineraryId },
       orderBy: [
         {
           startDate: "desc",

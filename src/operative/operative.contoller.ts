@@ -8,8 +8,14 @@ import {
   UsePipes,
   ValidationPipe,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from "@nestjs/swagger";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { SendEmailDto } from "./dto/email.dto";
 import { OperativeService } from "./operative.service";
 
@@ -20,6 +26,7 @@ export class OperativeController {
   constructor(private operativeService: OperativeService) {}
 
   @ApiOperation({ summary: "Get Hotel search" })
+  @ApiQuery({ name: "query", required: true, type: String })
   @UseGuards(JwtAuthGuard)
   @Get("directions")
   search(@Query("query") query: string) {
@@ -27,13 +34,15 @@ export class OperativeController {
   }
 
   @ApiOperation({ summary: "Get Directions search" })
+  @ApiQuery({ name: "query", required: true, type: String })
   @UseGuards(JwtAuthGuard)
   @Get("autocomplete")
   searrcherDirections(@Query("query") query: string) {
     return this.operativeService.searchDestinations(query);
   }
 
-  @ApiOperation({ summary: "Get Wather details" })
+  @ApiOperation({ summary: "Get Weather details" })
+  @ApiQuery({ name: "query", required: true, type: String })
   @UseGuards(JwtAuthGuard)
   @Get("weather")
   searchWeather(@Query("query") query: string) {
@@ -41,6 +50,8 @@ export class OperativeController {
   }
 
   @ApiOperation({ summary: "Get flight details" })
+  @ApiQuery({ name: "flightNumber", required: true, type: String })
+  @ApiQuery({ name: "date", required: true, type: String })
   @UseGuards(JwtAuthGuard)
   @Get("fight")
   searchFights(
@@ -59,6 +70,7 @@ export class OperativeController {
   }
 
   @ApiOperation({ summary: "Get image" })
+  @ApiQuery({ name: "query", required: true, type: String })
   @UseGuards(JwtAuthGuard)
   @Get("image")
   getDestination(@Query("query") query: string) {

@@ -1,22 +1,39 @@
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { Inject, Injectable } from "@nestjs/common";
+import {
+  Inject,
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from "@nestjs/common";
 import { Cache } from "cache-manager";
-
 import { Browser, chromium, Page } from "playwright";
 
 @Injectable()
 export class ScrapingService {
-  private browser: Browser;
+  private readonly logger = new Logger(ScrapingService.name);
+  private browser: Browser | null = null;
 
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
   // Iniciar Playwright al inicializar el módulo
   async init() {
-    if (!chromium) {
-      return;
+    try {
+      this.browser = await chromium.launch({
+        headless: true,
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-gpu",
+        ],
+      });
+      this.logger.log("Playwright Chromium initialized successfully.");
+    } catch (error) {
+      this.browser = null;
+      this.logger.warn(
+        `Playwright Chromium could not be launched at startup: ${error.message}`
+      );
     }
-
-    this.browser = await chromium.launch({ headless: true });
   }
 
   // Método para scrapear detalles de un vuelo
@@ -24,17 +41,28 @@ export class ScrapingService {
     const cachedData = await this.cacheManager.get(flightNumber);
 
     if (cachedData) {
-      console.log(`Cache hit for flight ${flightNumber}`);
+      this.logger.log(`Cache hit for flight ${flightNumber}`);
       return cachedData;
     }
 
-    const page: Page = await this.browser.newPage();
+    if (!this.browser || !this.browser.isConnected()) {
+      await this.init();
+    }
 
-    // URL de ejemplo (cámbiala por el sitio que contiene la información del vuelo)
-    const url = `https://www.airnavradar.com/data/flights/${flightNumber}`;
-    await page.goto(url, { waitUntil: "load" });
+    if (!this.browser) {
+      throw new ServiceUnavailableException(
+        "El servicio de scraping de vuelos no está disponible en este momento."
+      );
+    }
+
+    let page: Page | null = null;
 
     try {
+      page = await this.browser.newPage();
+
+      const url = `https://www.airnavradar.com/data/flights/${encodeURIComponent(flightNumber)}`;
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 20000 });
+
       // Extraer información del vuelo usando selectores CSS
       const flightInfo = await page.evaluate(() => {
         const citysLarge = Array.from(
@@ -47,17 +75,18 @@ export class ScrapingService {
               .trim()
               .split("/")[0]
         );
-        console.log(citysLarge);
+
         const citys = Array.from(
           document.querySelectorAll("#airports #city")
         ).map((item) => item.innerHTML.trim());
 
         const arrivalTime = Array.from(
           document.querySelectorAll("#content #value")
-        ).map((item) => item.textContent.trim());
+        ).map((item) => item.textContent?.trim());
 
         return {
-          departure: citys[0] || document.querySelector("body").innerText,
+          departure:
+            citys[0] || (document.querySelector("body") as any)?.innerText,
           arrivadas: citys[1] || null,
           departureLabel: citysLarge[2] || null,
           arrivadasLabel: citysLarge[3] || null,
@@ -65,21 +94,30 @@ export class ScrapingService {
         };
       });
 
-      await page.close();
-
       await this.cacheManager.set(flightNumber, flightInfo, 1000);
 
       return flightInfo;
     } catch (error) {
-      await page.close();
-      throw new Error("Error al obtener los datos del vuelo.");
+      this.logger.error(
+        `Error al obtener los datos del vuelo ${flightNumber}: ${error.message}`
+      );
+      throw new ServiceUnavailableException("Error al obtener los datos del vuelo.");
+    } finally {
+      if (page) {
+        try {
+          await page.close();
+        } catch (e) {}
+      }
     }
   }
 
   // Cerrar el navegador cuando se detenga el servicio
   async close() {
     if (this.browser) {
-      await this.browser.close();
+      try {
+        await this.browser.close();
+      } catch (e) {}
+      this.browser = null;
     }
   }
 }

@@ -19,7 +19,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { Itinerary, Prisma } from "@prisma/client";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { CreateDetailsDto } from "./dto/create-details.dto";
 import { CreateItineraryDto } from "./dto/create-itinerary.dto";
 import { ItinerariesService } from "./itinerary.service";
